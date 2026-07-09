@@ -1,6 +1,7 @@
 package lv.bootcamp.shelter.controller;
 
 import lv.bootcamp.shelter.form.AnimalForm;
+import lv.bootcamp.shelter.model.AnimalType;
 import lv.bootcamp.shelter.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -43,6 +44,7 @@ public class AnimalPageController {
     public String newAnimalForm(Model model) {
         model.addAttribute("form",
                 new AnimalForm(null, null, null, null, null, null));
+        model.addAttribute("types", AnimalType.values());
         return "animals-new";
     }
 

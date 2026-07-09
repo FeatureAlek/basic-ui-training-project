@@ -35,13 +35,10 @@
       <label for="name">Name</label>
       <input id="name" th:field="*{name}" type="text" required placeholder="e.g. Milo">
 
-      <label for="type">Type</label>
-      <select id="type" th:field="*{type}">
-        <option value="">— choose —</option>
-        <option value="CAT">Cat</option>
-        <option value="DOG">Dog</option>
-        <option value="OTHER">Other</option>
-      </select>
+      <label for="type">Type</label><select id="type" th:field="*{type}">
+      <option value="">— choose —</option>
+      <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+    </select>
 
       <label for="breed">Breed</label>
       <input id="breed" th:field="*{breed}" type="text" placeholder="e.g. Siamese">
