@@ -31,7 +31,7 @@
       <nav>
           <a th:href="@{/}">Home</a>
           <a th:href="@{/animals}">All animals</a>
-          <a th:href="@{/animals/new}">Add animal</a>
+          <a th:href="@{/animals/new}" th:if="${isAdmin}">Add animal</a>
       </nav>
 
     <section aria-label="Animal list">
@@ -62,10 +62,6 @@
         </ul>
     </section>
 
-      <!--
-        POTENTIAL ISSUE NOT specified by the task
-        FIX LATER
-     -->
       <section aria-label="Add new animal"  th:if="${isAdmin}">
       <h2>Add a new animal</h2>
         <form th:action="@{/animals}" th:object="${form}" method="post">
