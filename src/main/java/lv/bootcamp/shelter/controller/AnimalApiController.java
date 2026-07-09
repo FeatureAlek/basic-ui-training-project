@@ -1,5 +1,8 @@
 package lv.bootcamp.shelter.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lv.bootcamp.shelter.dto.AnimalCreateRequest;
 import lv.bootcamp.shelter.dto.AnimalResponse;
@@ -19,15 +22,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/animals")
+@Tag(name = "Animals", description = "Endpoints for browsing, creating, and adopting shelter animals")
 public class AnimalApiController {
 
     private final AnimalService animalService;
 
+    @Operation(summary = "List all animals", description = "Returns all animals currently in the shelter.")
+    @ApiResponse(responseCode = "200", description = "List of animals returned successfully")
     @GetMapping
     public List<AnimalResponse> findAll() {
         return animalService.findAll();
     }
 
+    @Operation(summary = "Get animal by ID", description = "Returns a single animal by its ID.")
+    @ApiResponse(responseCode = "200", description = "Animal found")
+    @ApiResponse(responseCode = "404", description = "Animal not found")
     @GetMapping("/{id}")
     public ResponseEntity<AnimalResponse> findById(@PathVariable Long id) {
         return animalService.findById(id)
@@ -35,30 +44,37 @@ public class AnimalApiController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Lists adopted animals. Restricted to ROLE_ADMIN — see SecurityConfig.
-     * Read-only, so it's a good endpoint for testing role-based JWT authorization:
-     * calling it repeatedly (e.g. with/without a token, or with a ROLE_USER token)
-     * has no side effects, unlike {@code POST /api/animals}.
-     */
+    @Operation(
+            summary = "List adopted animals",
+            description = "Restricted to ROLE_ADMIN. Read-only endpoint, safe to call repeatedly for testing role-based authorization."
+    )
+    @ApiResponse(responseCode = "200", description = "List of adopted animals returned successfully")
+    @ApiResponse(responseCode = "403", description = "Caller does not have ROLE_ADMIN")
     @GetMapping("/adopted")
     public List<AnimalResponse> findAdopted() {
         return animalService.findAdopted();
     }
 
-    /**
-     * Creates a new animal. Restricted to ROLE_ADMIN — see SecurityConfig.
-     */
+    @Operation(
+            summary = "Create a new animal",
+            description = "Restricted to ROLE_ADMIN."
+    )
+    @ApiResponse(responseCode = "201", description = "Animal created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request body")
+    @ApiResponse(responseCode = "403", description = "Caller does not have ROLE_ADMIN")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AnimalResponse create(@RequestBody @Valid AnimalCreateRequest request) {
         return animalService.create(request);
     }
 
-    /**
-     * Adopts an animal as the currently logged-in user. Restricted to ROLE_USER
-     * (not ROLE_ADMIN) — see SecurityConfig.
-     */
+    @Operation(
+            summary = "Adopt an animal",
+            description = "Adopts an animal as the currently logged-in user. Restricted to ROLE_USER."
+    )
+    @ApiResponse(responseCode = "200", description = "Animal adopted successfully")
+    @ApiResponse(responseCode = "404", description = "Animal not found")
+    @ApiResponse(responseCode = "409", description = "Animal is already adopted")
     @PostMapping("/{id}/adopt")
     public ResponseEntity<AnimalResponse> adopt(@PathVariable Long id, Authentication authentication) {
         return animalService.adopt(id, authentication.getName())
